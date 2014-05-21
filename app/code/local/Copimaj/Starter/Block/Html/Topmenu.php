@@ -66,7 +66,7 @@ class Copimaj_Starter_Block_Html_Topmenu extends Mage_Core_Block_Template
      * @param string $childrenWrapClass
      * @return string
      */
-    public function getHtml($outermostClass = '', $childrenWrapClass = '')
+    public function getHtml($outermostClass = '', $childrenWrapClass = '', $childLevelLimit = 1)
     {
         Mage::dispatchEvent('page_block_html_topmenu_gethtml_before', array(
             'menu' => $this->_menu,
@@ -80,7 +80,7 @@ class Copimaj_Starter_Block_Html_Topmenu extends Mage_Core_Block_Template
             $renderer->setMenuTree($this->_menu)->setChildrenWrapClass($childrenWrapClass);
             $html = $renderer->toHtml();
         } else {
-            $html = $this->_getHtml($this->_menu, $childrenWrapClass);
+            $html = $this->_getHtml($this->_menu, $childrenWrapClass, $childLevelLimit);
         }
 
         Mage::dispatchEvent('page_block_html_topmenu_gethtml_after', array(
@@ -99,7 +99,7 @@ class Copimaj_Starter_Block_Html_Topmenu extends Mage_Core_Block_Template
      * @return string
      * @deprecated since 1.8.2.0 use child block catalog.topnav.renderer instead
      */
-    protected function _getHtml(Varien_Data_Tree_Node $menuTree, $childrenWrapClass)
+    protected function _getHtml(Varien_Data_Tree_Node $menuTree, $childrenWrapClass, $childLevelLimit)
     {
         $html = '';
 
@@ -133,14 +133,14 @@ class Copimaj_Starter_Block_Html_Topmenu extends Mage_Core_Block_Template
                 . $this->escapeHtml($child->getName()) . '</span></a>';
 
             if ($child->hasChildren()) {
-                if (!empty($childrenWrapClass)) {
+                if (!empty($childrenWrapClass) && ($childLevel < $childLevelLimit)) {
                     $html .= '<div class="' . $childrenWrapClass . '">';
                 }
                 $html .= '<ul class="level' . $childLevel . '">';
                 $html .= $this->_getHtml($child, $childrenWrapClass);
                 $html .= '</ul>';
 
-                if (!empty($childrenWrapClass)) {
+                if (!empty($childrenWrapClass) && ($childLevel < $childLevelLimit)) {
                     $html .= '</div>';
                 }
             }
